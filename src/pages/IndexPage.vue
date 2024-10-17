@@ -1,5 +1,9 @@
 <template>
-  <h1>Actividad sismica</h1>
+  <q-page>
+    <div>
+      <h1>Actividad sismica</h1>
+    </div>
+  </q-page>
 </template>
 
 <script setup></script>
