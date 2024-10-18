@@ -1,13 +1,15 @@
 <template>
   <div class="row justify-center q-py-md items-center">
     <q-card
-      class="my-card col-auto col-sm-auto col-md-auto col-lg-auto col-xl-auto content-center q-pa-md"
+      class="my-card col-11 col-sm-auto col-md-auto col-lg-auto col-xl-auto content-center q-pa-md"
     >
       <q-card-section>
         <div class="column q-gutter-y-sm">
           <img
             src="/public/icons/logo-log.png"
             alt="Logo monitoreo volcanico"
+            style="width: 50%"
+            class="q-mx-auto"
           />
           <h1 class="text-h5 text-weight-regular text-center">
             Monitoreo volcanico

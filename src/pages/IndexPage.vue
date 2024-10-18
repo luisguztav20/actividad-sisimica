@@ -2,7 +2,7 @@
   <q-page>
     <div class="row justify-center q-py-md items-center">
       <q-card
-        class="my-card col-10 col-sm-6 col-md-5 col-lg-4 col-xl-2 content-center q-pa-md"
+        class="my-card col-10 col-sm-6 col-md-4 col-lg-3 col-xl-2 content-center q-pa-md"
       >
         <q-card-section>
           <h2 class="text-h5">Carga de datos</h2>
