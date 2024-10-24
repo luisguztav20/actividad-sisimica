@@ -1,6 +1,5 @@
 <template>
   <q-layout view="hHh lpR fFf">
-    <!-- Encabezado de la aplicación -->
     <q-header>
       <q-toolbar>
         <q-toolbar-title>
@@ -11,19 +10,18 @@
       </q-toolbar>
     </q-header>
 
-    <!-- Contenido principal donde se mostrarán las páginas -->
-    <q-page-container>
+    <q-page-container class="bg-primary">
       <router-view></router-view>
-      <!-- Aquí se renderizan las páginas -->
     </q-page-container>
 
-    <!-- Pie de página de la aplicación -->
-    <q-footer>
-      <div class="text-center">© 2024 - Mi Aplicación</div>
+    <q-footer class="bg-info">
+      <div class="text-center">© {{ year }} - Mi Aplicación</div>
     </q-footer>
   </q-layout>
 </template>
 
-<script setup></script>
+<script setup>
+const year = new Date().getFullYear();
+</script>
 
 <style lang="scss" scoped></style>
