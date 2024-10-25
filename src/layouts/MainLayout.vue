@@ -1,12 +1,12 @@
 <template>
   <q-layout view="hHh lpR fFf">
-    <q-header>
+    <q-header style="box-shadow: 0px 2px 12px 0px rgba(0,0,0,0.75);">
       <q-toolbar>
-        <q-toolbar-title>
-          <router-link to="/" class="text-white no-decoration"
-            >Mi Aplicación</router-link
-          >
-        </q-toolbar-title>
+      <q-toolbar-title>
+        <router-link to="/" class="text-dark no-decoration q-px-xl">
+        <img src="/volcan-08.gif" alt="Logo" style="height: 40px; width: auto; vertical-align: middle;">
+        </router-link>
+      </q-toolbar-title>
       </q-toolbar>
     </q-header>
 
@@ -14,8 +14,8 @@
       <router-view></router-view>
     </q-page-container>
 
-    <q-footer class="bg-info">
-      <div class="text-center">© {{ year }} - Mi Aplicación</div>
+    <q-footer class="bg-secondary">
+      <div class="text-center text-black">© {{ year }} - Mi Aplicación</div>
     </q-footer>
   </q-layout>
 </template>

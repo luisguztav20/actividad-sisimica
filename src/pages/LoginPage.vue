@@ -12,7 +12,7 @@
             style="width: auto; height: 150px"
             class="q-mx-auto q-mb-md"
           />
-          <h1 class="text-h4 text-weight-bold text-accent">
+          <h1 class="text-h4 text-weight-bold text-secondary">
             App de Monitoreo Volcánico
           </h1>
           <p class="text-body1">
@@ -25,7 +25,7 @@
         <div class="q-mx-auto q-pa-lg" style="max-width: 600px">
           <q-form
             @submit="onSubmit"
-            class="form q-gutter-y-md q-pa-md bg-accent"
+            class="form q-gutter-y-md q-pa-md bg-secondary"
             style="border: solid 1px #ccc; border-radius: 5px"
           >
             <h4 class="text-center">Formulario de registro</h4>
