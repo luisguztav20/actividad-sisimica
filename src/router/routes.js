@@ -3,8 +3,21 @@ const routes = [
     path: "/",
     component: () => import("layouts/MainLayout.vue"),
     children: [
-      { path: "", component: () => import("pages/IndexPage.vue"), meta: { title: 'Inicio' } },
-      { path: "login", component: () => import("pages/LoginPage.vue"), meta: { title: 'Inicio de Sesión' } },
+      {
+        path: "",
+        component: () => import("pages/IndexPage.vue"),
+        meta: { title: "Inicio" },
+      },
+      {
+        path: "login",
+        component: () => import("pages/LoginPage.vue"),
+        meta: { title: "Inicio de Sesión" },
+      },
+      {
+        path: "data",
+        component: () => import("pages/ViewDataPage.vue"),
+        meta: { title: "Monitoreo volcanico" },
+      },
     ],
   },
 
@@ -13,7 +26,7 @@ const routes = [
   {
     path: "/:catchAll(.*)*",
     component: () => import("pages/ErrorNotFound.vue"),
-    meta: { title: 'Error not Found' }
+    meta: { title: "Error not Found" },
   },
 ];
 
