@@ -12,54 +12,48 @@
             style="width: auto; height: 150px"
             class="q-mx-auto q-mb-md"
           />
-          <h1 class="text-h4 text-weight-bold text-secondary">
+          <h1 class="text-h4 text-weight-bold text-black">
             App de Monitoreo Volcánico
           </h1>
-          <p class="text-body1">
-            Inicia sesión para acceder a la plataforma
-          </p>
+          <p class="text-body1 text-black">Inicia sesión para acceder a la plataforma</p>
         </div>
       </div>
 
       <div class="col-xs-12 col-sm-12 col-md-6 content-center">
         <div class="q-mx-auto q-pa-lg" style="max-width: 600px">
-          <q-form
-            @submit="onSubmit"
-            class="form q-gutter-y-md q-pa-md bg-secondary"
-            style="border: solid 1px #ccc; border-radius: 5px"
-          >
-            <h4 class="text-center">Formulario de registro</h4>
-            <q-input
-              v-model="email"
-              label="Correo"
-              type="email"
-              required
-              style="color: aliceblue;"
-            />
+          <q-card flat bordered class="q-pa-md">
+            <q-card-section>
+              <h4 class="text-center">Formulario de registro</h4>
+            </q-card-section>
 
-            <q-input
-              type="password"
-              v-model="password"
-              label="Contraseña"
-              required
-            />
+            <q-form @submit="onSubmit" class="q-gutter-y-md">
+              <q-card-section>
+                <q-input v-model="email" label="Correo" type="email" required />
+                <q-input
+                  type="password"
+                  v-model="password"
+                  label="Contraseña"
+                  required
+                />
+              </q-card-section>
 
-            <div class="column q-gutter-y-md">
-              <q-btn
-                color="primary"
-                label="Iniciar sesión"
-                type="submit"
-                rounded
-              />
-
-              <q-btn outline color="primary" rounded>
-                <q-avatar size="20px" class="q-mr-sm">
-                  <img src="/icons/google.png" />
-                </q-avatar>
-                Iniciar con Google
-              </q-btn>
-            </div>
-          </q-form>
+              <q-card-section align="center" class="column q-gutter-y-md">
+                <q-btn
+                  color="primary"
+                  label="Iniciar sesión"
+                  type="submit"
+                  rounded
+                  style="width: 100%"
+                />
+                <q-btn outline color="primary" rounded style="width: 100%">
+                  <q-avatar size="20px" class="q-mr-sm">
+                    <img src="/icons/google.png" />
+                  </q-avatar>
+                  Iniciar con Google
+                </q-btn>
+              </q-card-section>
+            </q-form>
+          </q-card>
         </div>
       </div>
     </div>

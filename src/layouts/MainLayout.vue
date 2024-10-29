@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh lpR fFf">
-    <q-header style="box-shadow: 0px 2px 12px 0px rgba(0,0,0,0.75);">
+    <q-header>
       <q-toolbar>
       <q-toolbar-title>
         <router-link to="/" class="text-dark no-decoration q-px-xl">
@@ -10,12 +10,12 @@
       </q-toolbar>
     </q-header>
 
-    <q-page-container class="bg-primary">
+    <q-page-container>
       <router-view></router-view>
     </q-page-container>
 
-    <q-footer class="bg-secondary">
-      <div class="text-center text-black">© {{ year }} - Mi Aplicación</div>
+    <q-footer>
+      <div class="text-center">© {{ year }} - Mi Aplicación</div>
     </q-footer>
   </q-layout>
 </template>
