@@ -25,14 +25,22 @@
             label="Correo"
             :dense="dense"
             class=""
-          />
+          >
+            <template v-slot:prepend>
+              <q-icon name="person" />
+            </template>
+          </q-input>
           <q-input
             outlined
             type="password"
             v-model="text"
             label="Contraseña"
             :dense="dense"
-          />
+          >
+            <template v-slot:prepend>
+              <q-icon name="lock" />
+            </template>
+          </q-input>
           <div class="column q-gutter-y-md">
             <q-btn
               color="primary"

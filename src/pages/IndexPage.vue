@@ -21,7 +21,10 @@
             />
             <q-input v-model="time" type="time" label="Hora" />
             <q-select v-model="model" :options="optionsEje" label="Eje" />
-            <q-btn color="primary" label="Guardar datos" rounded />
+            <div class="col-sm-3">
+              <q-btn color="primary" label="Guardar datos" rounded />
+            </div>
+
             <q-linear-progress
               dark
               rounded
