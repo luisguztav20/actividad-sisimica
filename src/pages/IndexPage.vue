@@ -8,22 +8,21 @@
           <h2 class="text-h5">Carga de datos</h2>
           <q-form @submit="onSubmit">
             <div class="column q-gutter-y-lg">
+              <q-input outlined v-model="date" type="text" label="Fecha" />
               <q-input
-                v-model="date"
-                type="date"
-                label="Fecha"
-                stack-label
-                :dense="dense"
+                outlined
+                v-model="amplitudModel"
+                type="number"
+                label="Amplitud"
               />
               <q-select
+                outlined
                 v-model="stationModel"
                 :options="stationOptions"
                 label="Estacion"
-                stack-label
-                :dense="dense"
               />
-              <q-input v-model="time" type="time" label="Hora" />
               <q-select
+                outlined
                 v-model="axisModel"
                 :options="axisOptions"
                 label="Eje"
@@ -51,36 +50,70 @@
 
 <script setup>
 import { ref } from "vue";
+import { api } from "src/boot/axios";
+import { Notify } from "quasar";
 
 // Definir variables reactivas
-const date = ref("");
-const time = ref("");
+const date = ref(null);
+const amplitudModel = ref(null);
+
 const stationModel = ref("");
 const axisModel = ref("");
-const stationOptions = [
-  { label: "Estacion A", value: "estacionA" },
-  { label: "Estacion B", value: "estacionB" },
-  { label: "Estacion C", value: "estacionC" },
-];
+const stationOptions = [{ label: "Estacion Nube", val: "estacion ABC" }];
 const axisOptions = [
-  { label: "X", value: "ejeX" },
-  { label: "Y", value: "ejeY" },
-  { label: "Z", value: "ejeZ" },
+  { label: "E", val: "e" },
+  { label: "H", val: "h" },
+  { label: "Z", val: "z" },
 ];
+
+const convertirFecha = (id) => {
+  const fecha = Number(id);
+  const fechaConvertir = new Date(fecha);
+
+  // Convertir a una cadena legible
+  const fechaFormateada = fechaConvertir.toISOString(); // Formato ISO 8601
+  return fechaFormateada;
+};
+
+const postData = (eje) => {
+  const fechaFormateada = convertirFecha(date.value);
+  const amplitud = Number(amplitudModel.value);
+  api
+    .post(`/volcanes-${eje}`, {
+      _id: fechaFormateada,
+      estacion: stationModel.value.val,
+      valor: amplitud,
+    })
+    .then((response) => {
+      console.log("DATOS GUARDADOS");
+      console.log(response.data);
+
+      Notify.create({
+        message: "Datos guardados corectamente",
+        color: "positive",
+        position: "top",
+      });
+    })
+    .catch((error) => {
+      console.error("Error al obtener los datos:", error);
+
+      Notify.create({
+        message: "Los datos no se enviaron",
+        color: "red",
+        position: "top",
+      });
+    });
+};
+
 const onSubmit = () => {
-  // Handle form submission
-  console.log("Form submitted");
-  console.log("Fecha:", date.value);
-  console.log("Hora:", time.value);
-  console.log("Estacion:", stationModel.value);
-  console.log("Eje:", axisModel.value);
+  postData(axisModel.value.val);
 
   resetForm();
 };
 
 const resetForm = () => {
   date.value = "";
-  time.value = "";
+  amplitudModel.value = "";
   stationModel.value = "";
   axisModel.value = "";
 };
