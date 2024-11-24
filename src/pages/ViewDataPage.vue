@@ -65,15 +65,22 @@
 
     <div class="q-my-lg">
       <p>DATA EJE H</p>
-      <div v-for="dato in dataH" :key="dato" class="q-my-lg">
-        <p>Amplitud: {{ dato.valor }} fecha: {{ dato._id }}</p>
+      <div v-for="dato in valoresH" :key="dato" class="q-my-lg">
+        <p>Amplitud: {{ dato.amplitud }} fecha: {{ dato.fecha }}</p>
       </div>
     </div>
 
     <div class="q-my-lg">
       <p>DATA EJE Z</p>
-      <div v-for="dato in dataZ" :key="dato" class="q-my-lg">
-        <p>Amplitud: {{ dato.valor }} fecha: {{ dato._id }}</p>
+      <div v-for="dato in valoresZ" :key="dato" class="q-my-lg">
+        <p>Amplitud: {{ dato.amplitud }} fecha: {{ dato.fecha }}</p>
+      </div>
+    </div>
+
+    <div class="q-my-lg">
+      <p>DATA EJE E</p>
+      <div v-for="dato in valoresE" :key="dato" class="q-my-lg">
+        <p>Amplitud: {{ dato.amplitud }} fecha: {{ dato.fecha }}</p>
       </div>
     </div>
   </q-page>
@@ -94,14 +101,17 @@ const dataH = ref([]);
 const dataZ = ref([]);
 const dataE = ref([]);
 const valoresZ = ref([]);
+const valoresH = ref([]);
+const valoresE = ref([]);
 
 const onSubmit = () => {
-  getData("z");
-
-  amplitudes();
+  getData("z"); //hace la peticon al backend con las fechas y horas de los inputs y recibe como parametro el eje a consultar4
+  getData("e");
+  getData("h");
 };
 
 const convertirFechas = () => {
+  // le da formatos a las fechas para consultarlas
   const fechaHoraInicial = `${fechaInicio.value}T${horaInicio.value}:00.000Z`;
   const fechaHoraFinal = `${fechaFinal.value}T${horaFinal.value}:00.000Z`;
 
@@ -109,7 +119,7 @@ const convertirFechas = () => {
 };
 
 const getData = (eje) => {
-  const [fechaHoraInicial, fechaHoraFinal] = convertirFechas();
+  const [fechaHoraInicial, fechaHoraFinal] = convertirFechas(); //trae las fechas con formato para pasarlas al body
   api
     .post(`/volcanes-${eje}/_find`, {
       selector: {
@@ -125,19 +135,28 @@ const getData = (eje) => {
       console.log(data.value);
 
       if (eje === "h") {
-        data.value.docs.forEach((Element) => dataH.value.push(Element));
+        data.value.docs.forEach((Element) => dataH.value.push(Element)); //asigna el valor al eje H
+        valoresH.value = dataH.value.map((elemento) => ({
+          amplitud: elemento.valor,
+          fecha: elemento._id,
+        }));
       }
 
       if (eje === "z") {
-        data.value.docs.forEach((Element) => dataZ.value.push(Element));
-        valoresZ.value = dataZ.value.filter((Element) =>
-          valoresZ.value.push(Element.valor)
-        );
-
-        console.log(valoresZ.value);
+        data.value.docs.forEach((Element) => dataZ.value.push(Element)); //asigna el valor al eje Z
+        // Aqui debesmos extraer los valores de cada dato
+        valoresZ.value = dataZ.value.map((elemento) => ({
+          amplitud: elemento.valor,
+          fecha: elemento._id,
+        }));
+        console.log("AMPLITUDES:" + valoresZ.value);
       }
       if (eje === "e") {
-        data.value.docs.forEach((Element) => dataE.value.push(Element));
+        data.value.docs.forEach((Element) => dataE.value.push(Element)); //asigna el valor al eje E
+        valoresE.value = dataE.value.map((elemento) => ({
+          amplitud: elemento.valor,
+          fecha: elemento._id,
+        }));
       }
     })
     .catch((error) => {
@@ -145,10 +164,6 @@ const getData = (eje) => {
     });
 };
 onMounted(() => {});
-
-const amplitudes = () => {
-  return dataZ.value.forEach((dato) => console.log(dato.valor));
-};
 </script>
 
 <style lang="scss" scoped></style>

@@ -56,31 +56,36 @@ import { Notify } from "quasar";
 // Definir variables reactivas
 const date = ref(null);
 const amplitudModel = ref(null);
-
 const stationModel = ref("");
 const axisModel = ref("");
-const stationOptions = [{ label: "Estacion Nube", val: "estacion ABC" }];
+
+const stationOptions = [{ label: "Estacion Nube", val: "estacion ABC" }]; //estaciones disponibles
+
 const axisOptions = [
+  //opciones para mostrar
   { label: "E", val: "e" },
   { label: "H", val: "h" },
   { label: "Z", val: "z" },
 ];
 
-const convertirFecha = (id) => {
-  const fecha = Number(id);
-  const fechaConvertir = new Date(fecha);
+// const convertirFecha = (id) => {
+//   //convierte la fecha para poder buscarla mas facil
+//   const fecha = Number(id);
+//   const fechaConvertir = new Date(fecha);
 
-  // Convertir a una cadena legible
-  const fechaFormateada = fechaConvertir.toISOString(); // Formato ISO 8601
-  return fechaFormateada;
-};
+//   // Convertir a una cadena legible
+//   const fechaFormateada = fechaConvertir.toISOString(); // Formato ISO 8601
+//   return fechaFormateada;
+// };
 
 const postData = (eje) => {
-  const fechaFormateada = convertirFecha(date.value);
+  // peticion para enviar los datos se pasa como parametro el eje
+  // const fechaFormateada = convertirFecha(date.value);
   const amplitud = Number(amplitudModel.value);
+
   api
     .post(`/volcanes-${eje}`, {
-      _id: fechaFormateada,
+      _id: date.value,
       estacion: stationModel.value.val,
       valor: amplitud,
     })
@@ -89,7 +94,7 @@ const postData = (eje) => {
       console.log(response.data);
 
       Notify.create({
-        message: "Datos guardados corectamente",
+        message: `Datos guardados corectamente Fecha: ${date.value} Amplitud: ${amplitud}`,
         color: "positive",
         position: "top",
       });
@@ -114,8 +119,8 @@ const onSubmit = () => {
 const resetForm = () => {
   date.value = "";
   amplitudModel.value = "";
-  stationModel.value = "";
-  axisModel.value = "";
+  // stationModel.value = "";
+  // axisModel.value = "";
 };
 </script>
 
