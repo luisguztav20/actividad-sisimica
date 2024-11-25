@@ -89,6 +89,11 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { api } from "../boot/axios";
+//import FFT from "fft.js";
+//import { sqrt } from "mathjs";
+//import mathjs from "mathjs";
+//import chart from "chartjs";
+import Algebrite from "algebrite";
 
 const estacionSeleccionada = ref(null);
 const fechaInicio = ref(null);
@@ -103,6 +108,8 @@ const dataE = ref([]);
 const valoresZ = ref([]);
 const valoresH = ref([]);
 const valoresE = ref([]);
+const resultadosH = []; //no se si es necesario en estos casos hacer reactivos estos arrays
+const relacionHV = []; // lo mismo que el de arriba
 
 const onSubmit = () => {
   getData("z"); //hace la peticon al backend con las fechas y horas de los inputs y recibe como parametro el eje a consultar4
@@ -158,12 +165,58 @@ const getData = (eje) => {
           fecha: elemento._id,
         }));
       }
+      if (
+        //este if lo puse aqui por que me permitia ya acceder a los arrays (cuando ya tenian datos)
+        valoresE.value.length === valoresH.value.length &&
+        valoresE.value.length > 0 &&
+        valoresH.value.length > 0
+      ) {
+        calcularH(); // y use la funcion calcularH para sacar la raiz cuadrada de la suma de los cuadrados de E y H(esta no es de la relacion H/V)
+        //llena el array calculosH(esta si es de la relacion H/V)
+      }
+      if (
+        // esto aqui comprueba que valoresZ ya tenga datos para poder sacar la relacion H/V(este procedimiento requiere haber ejecutado la funcion calcularH antes de forma correcta)
+        valoresZ.value.length === resultadosH.length &&
+        valoresZ.value.length > 0 &&
+        resultadosH.length > 0
+      ) {
+        calcularhv(); //es esta se calcula la relacion H/V (H de la relacion) y llena el array relacionHV
+      }
     })
     .catch((error) => {
       console.error("Error al obtener los datos:", error);
     });
 };
 onMounted(() => {});
+
+const calcularH = () => {
+  if (valoresH.value.length === 0 || valoresE.value.length === 0) {
+    console.error("Los arrays valoresH o valoresE están vacíos");
+    return;
+  }
+  let r = 0;
+  for (let i = 0; i < valoresH.value.length; i++) {
+    const h = Number(valoresH.value[i].amplitud);
+    const e = Number(valoresE.value[i].amplitud);
+    r = Math.sqrt(h ** 2 + e ** 2); //r es igual al H de la relacion H/V
+    resultadosH.push(r);
+  }
+  console.log("resultados r:", resultadosH);
+};
+
+const calcularhv = () => {
+  let hv = 0;
+  for (let i = 0; i < valoresZ.value.length; i++) {
+    const h = resultadosH[i];
+    const z = Number(valoresZ.value[i].amplitud);
+    if (z != 0) {
+      //teniendo en cuenta que no se vayan a dar divisiones entre 0, por lo tanto si ese caso se da, el array de relacionHV nuevo tendra un tamaño menor al de los valores H,E y Z
+      hv = h / z;
+      relacionHV.push(hv);
+    }
+  }
+  console.log("resultados hv:", relacionHV);
+};
 </script>
 
 <style lang="scss" scoped></style>
