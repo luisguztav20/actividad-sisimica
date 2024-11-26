@@ -89,7 +89,7 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { api } from "../boot/axios";
-//import FFT from "fft.js";
+import FFT from "fft.js";
 //import { sqrt } from "mathjs";
 //import mathjs from "mathjs";
 //import chart from "chartjs";
@@ -110,6 +110,7 @@ const valoresH = ref([]);
 const valoresE = ref([]);
 const resultadosH = []; //no se si es necesario en estos casos hacer reactivos estos arrays
 const relacionHV = []; // lo mismo que el de arriba
+const magnitudes = [];
 
 const onSubmit = () => {
   getData("z"); //hace la peticon al backend con las fechas y horas de los inputs y recibe como parametro el eje a consultar4
@@ -215,7 +216,28 @@ const calcularhv = () => {
       relacionHV.push(hv);
     }
   }
-  console.log("resultados hv:", relacionHV);
+
+  //para utilizar agregaremos 0 al array hasta llegar a la potencias de 2 mas cercana
+  let potencia = 0;
+  for (let i = 0; i < valoresZ.value.length; i++) {
+    if (relacionHV.length <= 2 ** i) {
+      potencia = 2 ** i;
+      break;
+    }
+  }
+  //Calcular la transformada se hizo en la misma funcion en la cual se hicieron los calculos de la relacion H/V aprovechando que esos datos se utilizan
+  console.log("relaciones H/V", relacionHV);
+  const hvTamanioPotencia = new Array(potencia).fill(0);
+  relacionHV.forEach((value, index) => (hvTamanioPotencia[index] = value));
+  const fft = new FFT(hvTamanioPotencia.length);
+  const output = new Array(hvTamanioPotencia.length);
+  fft.realTransform(output, hvTamanioPotencia);
+  console.log("datos Transformada:", output);
+  //segun en el vector output se dan los valores reales en los pares y imaginarios en los impares
+  for (let i = 0; i < output.length; i += 2) {
+    magnitudes.push(Math.sqrt(output[i] ** 2 + output[i + 1] ** 2));
+  }
+  console.log("MAGNITUDES:", magnitudes);
 };
 </script>
 
