@@ -81,7 +81,8 @@ const authStore = useAuthStore();
 // El correo permitido
 const allowedEmail = "ernesto.calderon@ues.edu.sv";
 const adminDos = "luizzmendozza1904@gmail.com";
-const adminTres = "Tq19002@ues.edu.sv";
+const adminTres = "tq19002@ues.edu.sv";
+const adminCuatro = "qj20001@ues.edu.sv";
 
 // Estado para mostrar mensajes de error
 const errorMessage = ref("");
@@ -96,7 +97,8 @@ const onSubmit = async () => {
     if (
       user.email !== allowedEmail &&
       user.email !== adminDos &&
-      user.email !== adminTres
+      user.email !== adminTres &&
+      user.email !== adminCuatro
     ) {
       // Si no es el correo permitido, cierra sesión
       await auth.signOut();

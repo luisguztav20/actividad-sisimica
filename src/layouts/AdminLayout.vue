@@ -42,8 +42,7 @@
         </div>
       </q-scroll-area>
 
-      <q-img class="absolute-top" style="height: 150px">
-        <img src="/src/assets/backUser.jpg" alt="background" />
+      <q-img class="absolute-top bg-primary" style="height: 150px">
         <div class="absolute-bottom bg-transparent">
           <q-avatar size="56px" class="q-mb-sm">
             <img :src="user?.photoURL" alt="Foto del usuario" />
