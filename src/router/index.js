@@ -6,15 +6,7 @@ import {
   createWebHashHistory,
 } from "vue-router";
 import routes from "./routes";
-
-/*
- * If not building with SSR mode, you can
- * directly export the Router instantiation;
- *
- * The function below can be async too; either use
- * async/await or return a Promise which resolves
- * with the Router instance.
- */
+import { useAuthStore } from "src/stores/auth"; // Importar el store de autenticación
 
 export default route(function (/* { store, ssrContext } */) {
   const createHistory = process.env.SERVER
@@ -33,10 +25,22 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
 
+  // Guardián de navegación para manejar rutas protegidas
   Router.beforeEach((to, from, next) => {
+    const authStore = useAuthStore(); // Instancia del store de autenticación
+
+    // Cambiar el título de la página
     const defaultTitle = "Monitoreo de Volcanes";
     document.title = to.meta.title || defaultTitle;
-    next();
+
+    // Verificar si la ruta requiere autenticación
+    if (to.meta.requiresAuth && !authStore.user) {
+      // Si no hay un usuario autenticado, redirige al login
+      next("/");
+    } else {
+      // Si no requiere autenticación o el usuario está autenticado, continúa
+      next();
+    }
   });
 
   return Router;

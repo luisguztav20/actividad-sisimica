@@ -15,7 +15,9 @@
           <h1 class="text-h4 text-weight-bold text-black">
             App de Monitoreo Volcánico
           </h1>
-          <p class="text-body1 text-black">Inicia sesión para acceder a la plataforma</p>
+          <p class="text-body1 text-black">
+            Inicia sesión para acceder a la plataforma
+          </p>
         </div>
       </div>
 
@@ -28,12 +30,11 @@
 
             <q-form @submit="onSubmit" class="q-gutter-y-md">
               <q-card-section>
-                <q-input v-model="email" label="Correo" type="email" required />
+                <q-input v-model="email" label="Correo" type="email" />
                 <q-input
                   type="password"
                   v-model="password"
                   label="Contraseña"
-                  required
                 />
               </q-card-section>
 
@@ -41,11 +42,16 @@
                 <q-btn
                   color="primary"
                   label="Iniciar sesión"
-                  type="submit"
                   rounded
                   style="width: 100%"
                 />
-                <q-btn outline color="primary" rounded style="width: 100%">
+                <q-btn
+                  outline
+                  color="primary"
+                  type="onSubmit"
+                  rounded
+                  style="width: 100%"
+                >
                   <q-avatar size="20px" class="q-mr-sm">
                     <img src="/icons/google.png" />
                   </q-avatar>
@@ -62,15 +68,65 @@
 
 <script setup>
 import { ref } from "vue";
+import { auth, provider } from "src/boot/firebase"; // Firebase auth y provider
+import { signInWithPopup } from "firebase/auth";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "src/stores/auth";
+import { Notify } from "quasar";
+import { use } from "echarts";
 
-// Definir variables reactivas
-const email = ref("");
-const password = ref("");
+const router = useRouter();
+const authStore = useAuthStore();
 
-const onSubmit = () => {
-  console.log("Correo:", email.value);
-  console.log("Contraseña:", password.value);
+// El correo permitido
+const allowedEmail = "ernesto.calderon@ues.edu.sv";
+const adminDos = "luizzmendozza1904@gmail.com";
+const adminTres = "Tq19002@ues.edu.sv";
+
+// Estado para mostrar mensajes de error
+const errorMessage = ref("");
+
+const onSubmit = async () => {
+  try {
+    // Inicia sesión con Firebase
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+
+    // Verifica si el correo es permitido
+    if (
+      user.email !== allowedEmail &&
+      user.email !== adminDos &&
+      user.email !== adminTres
+    ) {
+      // Si no es el correo permitido, cierra sesión
+      await auth.signOut();
+      Notify.create({
+        message: "No tienes permisos para iniciar sesion",
+        color: "red",
+        position: "top",
+      });
+      router.push("/");
+      return;
+    }
+
+    // Si el correo es válido, guarda el usuario en el store
+    authStore.user = {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName || "Usuario",
+      photoURL: user.photoURL || "https://cdn.quasar.dev/img/avatar.png",
+    };
+    Notify.create({
+      message: `Bienvenido ${authStore.user.displayName}`,
+      color: "positive",
+      position: "top",
+    });
+
+    // Redirige a la página principal o protegida
+    router.push("/data");
+  } catch (error) {
+    console.error("Error en el inicio de sesión:", error.message);
+    errorMessage.value = "Error al iniciar sesión. Inténtalo nuevamente.";
+  }
 };
 </script>
-
-<style lang="scss" scoped></style>

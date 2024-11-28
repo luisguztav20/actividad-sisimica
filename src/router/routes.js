@@ -5,26 +5,35 @@ const routes = [
     children: [
       {
         path: "",
-        component: () => import("pages/IndexPage.vue"),
-        meta: { title: "Inicio" },
-      },
-      {
-        path: "login",
-        component: () => import("pages/LoginPage.vue"),
-        meta: { title: "Inicio de Sesión" },
-      },
-      {
-        path: "data",
         component: () => import("pages/ViewDataPage.vue"),
-        meta: { title: "Monitoreo volcanico" },
+        meta: { title: "Mostrar Datos" },
       },
     ],
   },
-
-  // Always leave this as last one,
-  // but you can also remove it
   {
-    path: "/:catchAll(.*)*",
+    path: "/data",
+    component: () => import("layouts/AdminLayout.vue"),
+    children: [
+      {
+        path: "",
+        component: () => import("pages/IndexPage.vue"),
+        meta: { title: "Monitoreo Volcánico", requiresAuth: true }, // Solo esta ruta requiere autenticación
+      },
+    ],
+  },
+  {
+    path: "/login",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [
+      {
+        path: "",
+        component: () => import("pages/LoginPage.vue"),
+        meta: { title: "Iniciar sesion" },
+      },
+    ],
+  },
+  {
+    path: "/:catchAll(.*)",
     component: () => import("pages/ErrorNotFound.vue"),
     meta: { title: "Error not Found" },
   },

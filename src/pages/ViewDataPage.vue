@@ -1,14 +1,15 @@
 <template>
   <q-page :style-fn="myTweak" padding>
-    <div class="row justify-center q-gutter-y-lg">
-      <h1
-        class="text-h5 text-weight-bold col-11 col-md-10 text-primary q-mt-xl q-ma-none"
-      >
-        Mostrar datos
-      </h1>
+    <div class="row justify-center q-gutter-y-sm">
+      <div class="col-11 col-md-10 text-primary">
+        <h1 class="text-h5 text-weight-bold q-ma-none">Mostrar grafico FFT</h1>
+        <p>Ingres un rango de fecha para consultar</p>
+      </div>
 
       <q-form
-        @submit="onSubmit"
+        ref="form"
+        @submit.prevent="onSubmit"
+        @reset="onReset"
         class="row col-11 col-md-10 justify-between q-gutter-y-md"
       >
         <div class="row col-12 col-md-8 q-gutter-y-md">
@@ -18,6 +19,7 @@
             type="date"
             label="Fecha inicial"
             class="col-12 col-md-6 q-pr-sm"
+            :rules="[(val) => (val ? true : 'La fecha inicial es obligatoria')]"
           />
 
           <q-input
@@ -26,6 +28,7 @@
             type="time"
             label="Hora"
             class="col-12 col-md-6 q-pr-sm"
+            :rules="[(val) => (val ? true : 'La hora inicial es obligatoria')]"
           />
           <q-input
             outlined
@@ -33,6 +36,7 @@
             type="date"
             label="Fecha final"
             class="col-12 col-md-6 q-pr-sm"
+            :rules="[(val) => (val ? true : 'La fecha final es obligatoria')]"
           />
           <q-input
             outlined
@@ -40,48 +44,57 @@
             type="time"
             label="Hora"
             class="col-12 col-md-6 q-pr-sm"
+            :rules="[(val) => (val ? true : 'La hora final es obligatoria')]"
           />
         </div>
-        <div class="row col-12 col-md-4 q-gutter-y-md">
+        <div class="row col-12 col-md-4 q-gutter-y-md justify-start">
           <q-select
             outlined
             v-model="estacionSeleccionada"
             :options="estacion"
             label="Estacion"
             class="col-12 col-md-12"
+            :rules="[(val) => (val ? true : 'Debe seleccionar una estacion')]"
           />
 
           <q-btn
             color="primary"
             icon="search"
             label="consultar"
-            @click="onSubmit"
+            type="submit"
             rounded
-            class="col-12 col-md-12 q-pa-md"
+            class="col-6 col-md-7 q-mb-lg"
+          />
+          <q-btn
+            color="red"
+            rounded
+            icon="cleaning_services"
+            label="Limpiar"
+            type="reset"
+            class="q-mb-lg q-ml-md"
           />
         </div>
       </q-form>
     </div>
 
-    <div class="q-my-lg">
-      <p>DATA EJE H</p>
-      <div v-for="dato in valoresH" :key="dato" class="q-my-lg">
-        <p>Amplitud: {{ dato.amplitud }} fecha: {{ dato.fecha }}</p>
-      </div>
-    </div>
-
-    <div class="q-my-lg">
-      <p>DATA EJE Z</p>
-      <div v-for="dato in valoresZ" :key="dato" class="q-my-lg">
-        <p>Amplitud: {{ dato.amplitud }} fecha: {{ dato.fecha }}</p>
-      </div>
-    </div>
-
-    <div class="q-my-lg">
-      <p>DATA EJE E</p>
-      <div v-for="dato in valoresE" :key="dato" class="q-my-lg">
-        <p>Amplitud: {{ dato.amplitud }} fecha: {{ dato.fecha }}</p>
-      </div>
+    <div v-if="mostrarGrafico" class="row justify-center q-pt-xl">
+      <q-card class="my-card col-11 col-md-10" style="border-radius: 15px">
+        <h2 class="text-h5 text-center text-primary text-weight-bolder">
+          Grafico de amplitudes (Transformada rápida de Fourier)
+        </h2>
+        <h3 class="text-h6 text-center text-primary">
+          De: {{ fechaInicio }}:{{ horaInicio }}, Hasta: {{ fechaFinal }}:{{
+            horaFinal
+          }}
+        </h3>
+        <q-card-section>
+          <q-scroll-area style="height: 400px">
+            <div class="row no-wrap">
+              <AirQualityChart :data="magnitudes" />
+            </div>
+          </q-scroll-area>
+        </q-card-section>
+      </q-card>
     </div>
   </q-page>
 </template>
@@ -90,10 +103,8 @@
 import { onMounted, ref } from "vue";
 import { api } from "../boot/axios";
 import FFT from "fft.js";
-//import { sqrt } from "mathjs";
-//import mathjs from "mathjs";
-//import chart from "chartjs";
-import Algebrite from "algebrite";
+import AirQualityChart from "src/components/AirQualityChart.vue";
+import { Notify } from "quasar";
 
 const estacionSeleccionada = ref(null);
 const fechaInicio = ref(null);
@@ -108,14 +119,28 @@ const dataE = ref([]);
 const valoresZ = ref([]);
 const valoresH = ref([]);
 const valoresE = ref([]);
-const resultadosH = []; //no se si es necesario en estos casos hacer reactivos estos arrays
-const relacionHV = []; // lo mismo que el de arriba
-const magnitudes = [];
+let resultadosH = []; //no se si es necesario en estos casos hacer reactivos estos arrays
+let relacionHV = []; // lo mismo que el de arriba
+const magnitudes = ref([]);
+const mostrarGrafico = ref(false);
+
+const alertNotify = (message) => {
+  Notify.create({
+    message: message,
+    color: "orange",
+    position: "top",
+  });
+};
 
 const onSubmit = () => {
-  getData("z"); //hace la peticon al backend con las fechas y horas de los inputs y recibe como parametro el eje a consultar4
-  getData("e");
-  getData("h");
+  if (magnitudes.value.length > 0) {
+    mostrarGrafico.value = false;
+    alertNotify("Primero debe limpar los datos existentes");
+  } else {
+    getData("z"); //hace la peticon al backend con las fechas y horas de los inputs y recibe como parametro el eje a consultar4
+    getData("e");
+    getData("h");
+  }
 };
 
 const convertirFechas = () => {
@@ -157,7 +182,6 @@ const getData = (eje) => {
           amplitud: elemento.valor,
           fecha: elemento._id,
         }));
-        console.log("AMPLITUDES:" + valoresZ.value);
       }
       if (eje === "e") {
         data.value.docs.forEach((Element) => dataE.value.push(Element)); //asigna el valor al eje E
@@ -166,6 +190,16 @@ const getData = (eje) => {
           fecha: elemento._id,
         }));
       }
+      if (
+        valoresE.value.length === 0 &&
+        valoresH.value.length === 0 &&
+        valoresZ.value.length === 0
+      ) {
+        alertNotify("No existen mediciones en el rango de fecha ingresado");
+      } else {
+        mostrarGrafico.value = true;
+      }
+
       if (
         //este if lo puse aqui por que me permitia ya acceder a los arrays (cuando ya tenian datos)
         valoresE.value.length === valoresH.value.length &&
@@ -181,11 +215,16 @@ const getData = (eje) => {
         valoresZ.value.length > 0 &&
         resultadosH.length > 0
       ) {
-        calcularhv(); //es esta se calcula la relacion H/V (H de la relacion) y llena el array relacionHV
+        magnitudes.value = calcularhv(); //es esta se calcula la relacion H/V (H de la relacion) y llena el array relacionHV
       }
     })
     .catch((error) => {
       console.error("Error al obtener los datos:", error);
+      Notify.create({
+        message: "Ocurrio un error al mostrar los datos",
+        color: "red",
+        position: "top",
+      });
     });
 };
 onMounted(() => {});
@@ -206,6 +245,8 @@ const calcularH = () => {
 };
 
 const calcularhv = () => {
+  const magnitudes = [];
+  const relacionHV = [];
   let hv = 0;
   for (let i = 0; i < valoresZ.value.length; i++) {
     const h = resultadosH[i];
@@ -230,14 +271,38 @@ const calcularhv = () => {
   const hvTamanioPotencia = new Array(potencia).fill(0);
   relacionHV.forEach((value, index) => (hvTamanioPotencia[index] = value));
   const fft = new FFT(hvTamanioPotencia.length);
-  const output = new Array(hvTamanioPotencia.length);
+  let output = new Array(hvTamanioPotencia.length);
   fft.realTransform(output, hvTamanioPotencia);
-  console.log("datos Transformada:", output);
+  console.log("datos Transformada:", typeof output);
   //segun en el vector output se dan los valores reales en los pares y imaginarios en los impares
   for (let i = 0; i < output.length; i += 2) {
     magnitudes.push(Math.sqrt(output[i] ** 2 + output[i + 1] ** 2));
   }
-  console.log("MAGNITUDES:", magnitudes);
+  output = {};
+
+  return magnitudes;
+};
+
+const onReset = () => {
+  fechaInicio.value = null;
+  horaInicio.value = null;
+  fechaFinal.value = null;
+  horaFinal.value = null;
+  estacionSeleccionada.value = null;
+  mostrarGrafico.value = false;
+  resetData();
+};
+
+const resetData = () => {
+  dataE.value = [];
+  dataH.value = [];
+  dataZ.value = [];
+  valoresE.value = [];
+  valoresH.value = [];
+  valoresZ.value = [];
+  resultadosH = [];
+  relacionHV = [];
+  magnitudes.value = [];
 };
 </script>
 

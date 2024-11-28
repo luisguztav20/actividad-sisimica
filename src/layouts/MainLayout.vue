@@ -11,6 +11,14 @@
             />
           </router-link>
         </q-toolbar-title>
+        <q-btn
+          flat
+          color="white"
+          icon="login"
+          label="iniciar sesion"
+          to="/login"
+          rounded
+        />
       </q-toolbar>
     </q-header>
 
