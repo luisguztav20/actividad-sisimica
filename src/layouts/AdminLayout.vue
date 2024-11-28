@@ -2,11 +2,18 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar class="row justify-between">
-        <img
-          src="/volcan-08.gif"
-          alt="Logo"
-          style="height: 40px; width: auto; vertical-align: middle"
-        />
+        <q-toolbar-title>
+          <router-link to="/" class="text-dark no-decoration q-px-xl">
+            <img
+              src="/volcan-08.gif"
+              alt="Logo"
+              style="height: 40px; width: auto; vertical-align: middle"
+            />
+          </router-link>
+        </q-toolbar-title>
+        <router-link to="/data" class="text-dark no-decoration q-px-xl">
+          <q-btn flat color="white" icon="data_usage" label="Datos" rounded />
+        </router-link>
         <q-btn flat @click="drawer = !drawer" round dense icon="menu" />
       </q-toolbar>
     </q-header>

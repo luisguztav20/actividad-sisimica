@@ -11,6 +11,9 @@
             />
           </router-link>
         </q-toolbar-title>
+        <router-link to="/data" class="text-dark no-decoration q-px-xl">
+          <q-btn flat color="white" icon="data_usage" label="Datos" rounded />
+        </router-link>
         <q-btn
           flat
           color="white"
