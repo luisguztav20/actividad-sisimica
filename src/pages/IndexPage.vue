@@ -7,13 +7,25 @@
       >
         <q-card-section>
           <h2 class="text-h5">Carga de datos</h2>
-          <q-form ref="form" @submit.prevent="onSubmit" @reset="onSubmit">
+          <q-btn
+            href="https://www.unixtimestamp.com/"
+            label="Convertir fecha a Unix Timestamp"
+            target="_blank"
+            rel="noopener noreferrer"
+            color="primary"
+          />
+          <q-form
+            class="q-mt-sm"
+            ref="form"
+            @submit.prevent="onSubmit"
+            @reset="onSubmit"
+          >
             <div class="column q-gutter-y-lg">
               <q-input
                 outlined
                 v-model="date"
                 type="text"
-                label="Fecha"
+                label="Fecha en formato Unix Timestamp"
                 required
               />
               <q-input
